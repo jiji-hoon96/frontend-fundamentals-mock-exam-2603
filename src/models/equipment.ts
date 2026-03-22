@@ -6,3 +6,5 @@ export const EQUIPMENT_LABELS = {
 } as const;
 
 export type Equipment = keyof typeof EQUIPMENT_LABELS;
+
+export const ALL_EQUIPMENT: Equipment[] = Object.keys(EQUIPMENT_LABELS) as Equipment[];

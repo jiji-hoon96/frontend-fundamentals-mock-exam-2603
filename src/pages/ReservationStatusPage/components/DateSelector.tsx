@@ -19,7 +19,9 @@ export const DateSelector = ({ date, setDate }: Props) => {
           type="date"
           value={date}
           min={formatYYYYMMDD(new Date())}
-          onChange={e => setDate(e.target.value)}
+          onChange={e => {
+            if (e.target.value) setDate(e.target.value);
+          }}
           aria-label="날짜"
           css={{
             boxSizing: 'border-box',
