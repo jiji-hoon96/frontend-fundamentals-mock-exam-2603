@@ -1,10 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { getReservations } from "pages/remotes";
+import { queryOptions } from '@tanstack/react-query';
+import { getReservations } from 'pages/remotes';
 
 export const useGetReservationsQuery = (date: string) => {
-	return useQuery({
-		queryFn: () => getReservations(date),
-		queryKey: ["reservations", date],
-		enabled: !!date,
-	});
+  return queryOptions({
+    queryFn: () => getReservations(date),
+    queryKey: ['reservations', date],
+  });
 };
