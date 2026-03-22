@@ -25,6 +25,7 @@ export default defineConfig({
       pages: path.resolve(__dirname, 'src/pages'),
       containers: path.resolve(__dirname, 'src/containers'),
       components: path.resolve(__dirname, 'src/components'),
+      queries: path.resolve(__dirname, 'src/queries'),
       sections: path.resolve(__dirname, 'src/sections'),
       constants: path.resolve(__dirname, 'src/constants'),
       models: path.resolve(__dirname, 'src/models'),
