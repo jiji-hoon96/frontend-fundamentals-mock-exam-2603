@@ -14,6 +14,9 @@ export const TIME_SLOTS = Array.from({ length: (TIMELINE_END - TIMELINE_START) *
   return `${String(hour).padStart(2, '0')}:${minute}`;
 });
 
+export const SELECTABLE_START_TIMES = TIME_SLOTS.slice(0, -1);
+export const SELECTABLE_END_TIMES = TIME_SLOTS.slice(1);
+
 function getTimelineOffset(time: string): number {
   const [hour, minute] = time.split(':').map(Number);
   return (hour - TIMELINE_START) * 60 + minute;

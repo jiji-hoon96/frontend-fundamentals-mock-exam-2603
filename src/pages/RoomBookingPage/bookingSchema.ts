@@ -1,12 +1,13 @@
+import { ALL_EQUIPMENT } from 'models/equipment';
 import { z } from 'zod';
 
 export const bookingSchema = z
   .object({
     date: z.string().min(1),
-    startTime: z.string(),
-    endTime: z.string(),
+    startTime: z.string().min(1, '시작 시간을 입력해주세요.'),
+    endTime: z.string().min(1, '종료 시간을 입력해주세요.'),
     attendees: z.number().min(1, '참석 인원은 1명 이상이어야 합니다.'),
-    equipment: z.array(z.enum(['tv', 'whiteboard', 'video', 'speaker'])),
+    equipment: z.array(z.enum(ALL_EQUIPMENT)),
     preferredFloor: z.string(),
   })
   .refine(data => !data.startTime || !data.endTime || data.endTime > data.startTime, {

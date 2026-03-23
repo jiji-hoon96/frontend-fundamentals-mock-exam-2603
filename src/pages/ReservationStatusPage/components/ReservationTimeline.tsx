@@ -6,7 +6,7 @@ import type { Reservation, Room } from 'models/reservation';
 import { useGetReservationsQuery } from 'queries/useGetReservationsQuery';
 import { useGetRoomsQuery } from 'queries/useGetRoomsQuery';
 import { useState } from 'react';
-import { getTimelinePercent, TIMELINE_HOURS } from 'utils/getTimelineOffset';
+import { getTimelinePercent, TIMELINE_HOURS } from 'models/timeline';
 
 export const ReservationTimeline = ({ date }: { date: string }) => {
   const [{ data: reservations }, { data: rooms }] = useSuspenseQueries({

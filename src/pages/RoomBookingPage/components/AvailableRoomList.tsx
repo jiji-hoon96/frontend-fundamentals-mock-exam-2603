@@ -6,12 +6,12 @@ import type { Room } from 'models/reservation';
 interface Props {
   rooms: Room[];
   selectedRoomId: string | null;
-  onSelectRoom: (roomId: string) => void;
+  setSelectedRoomId: (roomId: string) => void;
   onBook: () => void;
   isBooking: boolean;
 }
 
-export const AvailableRoomList = ({ rooms, selectedRoomId, onSelectRoom, onBook, isBooking }: Props) => {
+export const AvailableRoomList = ({ rooms, selectedRoomId, setSelectedRoomId, onBook, isBooking }: Props) => {
   return (
     <div css={{ padding: '0 24px' }}>
       <div css={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
@@ -37,7 +37,7 @@ export const AvailableRoomList = ({ rooms, selectedRoomId, onSelectRoom, onBook,
             return (
               <button
                 key={room.id}
-                onClick={() => onSelectRoom(room.id)}
+                onClick={() => setSelectedRoomId(room.id)}
                 type="button"
                 aria-pressed={isSelected}
                 aria-label={room.name}
@@ -57,7 +57,7 @@ export const AvailableRoomList = ({ rooms, selectedRoomId, onSelectRoom, onBook,
                       top={room.name}
                       topProps={{ typography: 't6', fontWeight: 'bold', color: colors.grey900 }}
                       bottom={`${room.floor}층 · ${room.capacity}명 · ${room.equipment
-                        .map(e => EQUIPMENT_LABELS[e])
+                        .map(eq => EQUIPMENT_LABELS[eq])
                         .join(', ')}`}
                       bottomProps={{ typography: 't7', color: colors.grey600 }}
                     />
@@ -77,8 +77,8 @@ export const AvailableRoomList = ({ rooms, selectedRoomId, onSelectRoom, onBook,
       )}
 
       <Spacing size={16} />
-      <Button display="full" onClick={onBook} disabled={isBooking}>
-        {isBooking ? '예약 중...' : '확정'}
+      <Button display="full" onClick={onBook} disabled={isBooking || !selectedRoomId}>
+        {isBooking ? '예약 중' : '예약하기'}
       </Button>
     </div>
   );

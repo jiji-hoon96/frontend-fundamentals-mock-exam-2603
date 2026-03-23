@@ -11,7 +11,11 @@ export const Message = ({ type, text }: MessageProps) => {
   const isSuccess = type === 'success';
 
   return (
-    <div css={container}>
+    <div
+      css={{
+        padding: '0 24px',
+      }}
+    >
       <div css={messageStyle(isSuccess)}>
         <Text typography="t7" fontWeight="medium" color={isSuccess ? colors.blue600 : colors.red500}>
           {text}
@@ -20,10 +24,6 @@ export const Message = ({ type, text }: MessageProps) => {
       <Spacing size={12} />
     </div>
   );
-};
-
-const container = {
-  padding: '0 24px',
 };
 
 const messageStyle = (isSuccess: boolean) => ({

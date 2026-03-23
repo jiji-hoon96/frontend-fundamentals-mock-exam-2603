@@ -6,14 +6,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Top, Spacing, Border } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
 import { formatYYYYMMDD } from 'utils/formatYYYYMMDD';
-import type { Room, Reservation } from 'models/reservation';
 import { useGetRoomsQuery } from 'queries/useGetRoomsQuery';
 import { useGetReservationsQuery } from 'queries/useGetReservationsQuery';
-import { useCreateReservationMutation } from 'queries/useCreateReservationMutation';
 import { Message, type MessageProps } from 'components/Message';
 import { bookingSchema, type BookingFormValues } from './bookingSchema';
 import { BookingFilter } from './components/BookingFilter';
 import { AvailableRoomList } from './components/AvailableRoomList';
+import { filterAvailableRooms } from 'models/roomFilter';
+import { useCreateReservationMutation } from 'queries/useCreateReservationMutation';
 
 export function RoomBookingPage() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export function RoomBookingPage() {
   });
 
   const {
-    formState: { errors },
+    formState: { isValid },
   } = form;
 
   const [date, startTime, endTime, attendees, equipment, preferredFloor] = useWatch({
@@ -69,25 +69,17 @@ export function RoomBookingPage() {
 
   const { mutateAsync: createMutation, isPending } = useCreateReservationMutation();
 
-  const isFilterComplete = startTime !== '' && endTime !== '' && !errors.endTime && !errors.attendees;
   const parsedFloor = preferredFloor === '' ? null : Number(preferredFloor);
-  const floors = [...new Set(rooms.map((r: Room) => r.floor))].sort((a, b) => a - b);
 
-  const availableRooms = isFilterComplete
-    ? rooms
-        .filter((room: Room) => {
-          if (room.capacity < attendees) return false;
-          if (!equipment.every(eq => room.equipment.includes(eq))) return false;
-          if (parsedFloor !== null && room.floor !== parsedFloor) return false;
-          const hasConflict = reservations.some(
-            (r: Reservation) => r.roomId === room.id && r.date === date && r.start < endTime && r.end > startTime
-          );
-          return !hasConflict;
-        })
-        .sort((a: Room, b: Room) => {
-          if (a.floor !== b.floor) return a.floor - b.floor;
-          return a.name.localeCompare(b.name);
-        })
+  const availableRooms = isValid
+    ? filterAvailableRooms(rooms, reservations, {
+        attendees,
+        equipment,
+        floor: parsedFloor,
+        date,
+        startTime,
+        endTime,
+      })
     : [];
 
   const handleBook = async () => {
@@ -106,17 +98,16 @@ export function RoomBookingPage() {
         equipment,
       });
 
-      if ('ok' in result && result.ok) {
+      if (result.ok) {
         navigate('/', { state: { message: '예약이 완료되었습니다!' } });
         return;
       }
 
       setMessage({ type: 'error', text: result.message ?? '예약에 실패했습니다.' });
-      setSelectedRoomId(null);
     } catch {
       setMessage({ type: 'error', text: '예약에 실패했습니다.' });
-      setSelectedRoomId(null);
     }
+    setSelectedRoomId(null);
   };
 
   return (
@@ -146,17 +137,17 @@ export function RoomBookingPage() {
 
         <Spacing size={24} />
 
-        <BookingFilter floors={floors} />
+        <BookingFilter rooms={rooms} />
 
         <Spacing size={24} />
         <Border size={8} />
         <Spacing size={24} />
 
-        {isFilterComplete && (
+        {isValid && (
           <AvailableRoomList
             rooms={availableRooms}
             selectedRoomId={selectedRoomId}
-            onSelectRoom={setSelectedRoomId}
+            setSelectedRoomId={setSelectedRoomId}
             onBook={handleBook}
             isBooking={isPending}
           />

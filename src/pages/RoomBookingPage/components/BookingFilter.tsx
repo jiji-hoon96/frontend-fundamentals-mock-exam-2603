@@ -3,14 +3,15 @@ import { Text, Spacing, Select } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
 import { ALL_EQUIPMENT, EQUIPMENT_LABELS } from 'models/equipment';
 import { formatYYYYMMDD } from 'utils/formatYYYYMMDD';
-import { TIME_SLOTS } from 'utils/getTimelineOffset';
+import { SELECTABLE_END_TIMES, SELECTABLE_START_TIMES, TIME_SLOTS } from 'models/timeline';
 import type { BookingFormValues } from '../bookingSchema';
+import { Room } from 'models/reservation';
 
 interface Props {
-  floors: number[];
+  rooms: Room[];
 }
 
-export const BookingFilter = ({ floors }: Props) => {
+export const BookingFilter = ({ rooms }: Props) => {
   const {
     register,
     setValue,
@@ -28,6 +29,8 @@ export const BookingFilter = ({ floors }: Props) => {
     const next = equipment.includes(eq) ? equipment.filter(e => e !== eq) : [...equipment, eq];
     setValue('equipment', next, { shouldValidate: true });
   };
+
+  const floors = [...new Set(rooms.map((room: Room) => room.floor))].sort((a, b) => a - b);
 
   return (
     <div css={{ padding: '0 24px' }}>
@@ -55,9 +58,9 @@ export const BookingFilter = ({ floors }: Props) => {
             aria-label="시작 시간"
           >
             <option value="">선택</option>
-            {TIME_SLOTS.slice(0, -1).map(t => (
-              <option key={t} value={t}>
-                {t}
+            {SELECTABLE_START_TIMES.map(time => (
+              <option key={time} value={time}>
+                {time}
               </option>
             ))}
           </Select>
@@ -72,9 +75,9 @@ export const BookingFilter = ({ floors }: Props) => {
             aria-label="종료 시간"
           >
             <option value="">선택</option>
-            {TIME_SLOTS.slice(1).map(t => (
-              <option key={t} value={t}>
-                {t}
+            {SELECTABLE_END_TIMES.map(time => (
+              <option key={time} value={time}>
+                {time}
               </option>
             ))}
           </Select>
@@ -121,9 +124,9 @@ export const BookingFilter = ({ floors }: Props) => {
             aria-label="선호 층"
           >
             <option value="">전체</option>
-            {floors.map(f => (
-              <option key={f} value={f}>
-                {f}층
+            {floors.map(floor => (
+              <option key={floor} value={floor}>
+                {floor}층
               </option>
             ))}
           </Select>
@@ -138,25 +141,25 @@ export const BookingFilter = ({ floors }: Props) => {
         <Spacing size={8} />
         <div css={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {ALL_EQUIPMENT.map(eq => {
-            const selected = equipment.includes(eq);
+            const isSelected = equipment.includes(eq);
             return (
               <button
                 key={eq}
                 type="button"
                 onClick={() => toggleEquipment(eq)}
                 aria-label={EQUIPMENT_LABELS[eq]}
-                aria-pressed={selected}
+                aria-pressed={isSelected}
                 css={{
                   padding: '8px 16px',
                   borderRadius: 20,
-                  border: `1px solid ${selected ? colors.blue500 : colors.grey200}`,
-                  background: selected ? colors.blue50 : colors.grey50,
-                  color: selected ? colors.blue600 : colors.grey700,
+                  border: `1px solid ${isSelected ? colors.blue500 : colors.grey200}`,
+                  background: isSelected ? colors.blue50 : colors.grey50,
+                  color: isSelected ? colors.blue600 : colors.grey700,
                   fontSize: 14,
                   fontWeight: 500,
                   cursor: 'pointer',
                   transition: 'all 0.15s',
-                  '&:hover': { borderColor: selected ? colors.blue500 : colors.grey400 },
+                  '&:hover': { borderColor: isSelected ? colors.blue500 : colors.grey400 },
                 }}
               >
                 {EQUIPMENT_LABELS[eq]}
