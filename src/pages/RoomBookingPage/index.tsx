@@ -13,6 +13,7 @@ import { BookingFilter } from './components/BookingFilter';
 import { AvailableRoomList } from './components/AvailableRoomList';
 import { filterAvailableRooms } from 'models/roomFilter';
 import { useCreateReservationMutation } from 'queries/useCreateReservationMutation';
+import { PATHS } from 'pages/paths';
 
 export function RoomBookingPage() {
   const navigate = useNavigate();
@@ -98,7 +99,7 @@ export function RoomBookingPage() {
       });
 
       if (result.ok) {
-        navigate('/', { state: { message: '예약이 완료되었습니다!' } });
+        navigate(PATHS.HOME, { state: { message: '예약이 완료되었습니다!' } });
         return;
       }
 
@@ -115,7 +116,7 @@ export function RoomBookingPage() {
         <div css={{ padding: '12px 24px 0' }}>
           <button
             type="button"
-            onClick={() => navigate('/')}
+            onClick={() => navigate(PATHS.HOME)}
             aria-label="뒤로가기"
             css={{
               background: 'none',

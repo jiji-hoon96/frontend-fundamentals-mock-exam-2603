@@ -1,20 +1,20 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
-import { getRooms, getReservations, getMyReservations } from 'pages/remotes';
+import * as remotes from 'pages/remotes';
 
 export const roomKeys = createQueryKeys('rooms', {
   list: {
     queryKey: null,
-    queryFn: getRooms,
+    queryFn: () => remotes.getRooms(),
   },
 });
 
 export const reservationKeys = createQueryKeys('reservations', {
   list: (date: string) => ({
     queryKey: [date],
-    queryFn: () => getReservations(date),
+    queryFn: () => remotes.getReservations(date),
   }),
   my: {
     queryKey: null,
-    queryFn: getMyReservations,
+    queryFn: () => remotes.getMyReservations(),
   },
 });

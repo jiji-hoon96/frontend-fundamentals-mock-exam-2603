@@ -5,6 +5,7 @@ import { Top, Spacing, Border, Button } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
 
 import { formatYYYYMMDD } from 'utils/formatYYYYMMDD';
+import { PATHS } from 'pages/paths';
 import { useDeleteReservationMutation } from 'queries/useDeleteReservationMutation';
 import { Message, type MessageProps } from 'components/Message';
 import { Loading } from 'components/Loading';
@@ -79,7 +80,7 @@ export function ReservationStatusPage() {
       <Spacing size={24} />
 
       <div css={{ padding: '0 24px' }}>
-        <Button display="full" onClick={() => navigate('/booking')} disabled={isPending}>
+        <Button display="full" onClick={() => navigate(PATHS.BOOKING)} disabled={isPending}>
           예약하기
         </Button>
       </div>
