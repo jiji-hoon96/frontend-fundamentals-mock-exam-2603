@@ -2,11 +2,14 @@ import normalize from "emotion-normalize";
 import { css, Global } from "@emotion/react";
 import { Suspense, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ErrorBoundary } from "react-error-boundary";
 import { GlobalPortal } from "./GlobalPortal";
 
 import "_tosslib/sass/app.scss";
 import { PageLayout } from "pages/PageLayout";
 import { Routes } from "pages/Routes";
+import { Loading } from "components/Loading";
+import { ErrorFallback } from "components/ErrorFallback";
 
 export default function App() {
 	const [queryClient] = useState(
@@ -35,9 +38,11 @@ export default function App() {
           `}
 				/>
 				<PageLayout>
-					<Suspense fallback={<div>Loading...</div>}>
-						<Routes />
-					</Suspense>
+					<ErrorBoundary FallbackComponent={ErrorFallback}>
+						<Suspense fallback={<Loading />}>
+							<Routes />
+						</Suspense>
+					</ErrorBoundary>
 				</PageLayout>
 			</GlobalPortal.Provider>
 		</QueryClientProvider>

@@ -1,12 +1,14 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Top, Spacing, Border, Button } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
 
 import { formatYYYYMMDD } from 'utils/formatYYYYMMDD';
 import { useDeleteReservationMutation } from 'queries/useDeleteReservationMutation';
 import { Message, type MessageProps } from 'components/Message';
+import { Loading } from 'components/Loading';
+import { ErrorFallback } from 'components/ErrorFallback';
 import { DateSelector } from './components/DateSelector';
 import { MyReservation } from './components/MyReservation';
 import { ReservationTimeline } from './components/ReservationTimeline';
@@ -46,35 +48,36 @@ export function ReservationStatusPage() {
 
       <Spacing size={24} />
 
-      {/* 날짜 선택 */}
       <DateSelector date={date} setDate={setDate} />
 
       <Spacing size={24} />
       <Border size={8} />
       <Spacing size={24} />
 
-      {/* 예약 현황 타임라인 */}
-      <Suspense fallback={<div>로딩 중...</div>}>
-        <ReservationTimeline date={date} />
-      </Suspense>
+      {date && (
+        <ErrorBoundary FallbackComponent={ErrorFallback} resetKeys={[date]}>
+          <Suspense fallback={<Loading message="예약 현황을 불러오는 중..." />}>
+            <ReservationTimeline date={date} />
+          </Suspense>
+        </ErrorBoundary>
+      )}
 
       <Spacing size={24} />
       <Border size={8} />
       <Spacing size={24} />
 
-      {/* 메시지 배너 */}
       {message && <Message type={message.type} text={message.text} />}
 
-      {/* 내 예약 목록 */}
-      <Suspense fallback={<div>로딩 중...</div>}>
-        <MyReservation onCancel={handleCancel} />
-      </Suspense>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <Suspense fallback={<Loading message="내 예약을 불러오는 중..." />}>
+          <MyReservation onCancel={handleCancel} />
+        </Suspense>
+      </ErrorBoundary>
 
       <Spacing size={24} />
       <Border size={8} />
       <Spacing size={24} />
 
-      {/* 예약하기 버튼 */}
       <div css={{ padding: '0 24px' }}>
         <Button display="full" onClick={() => navigate('/booking')} disabled={isPending}>
           예약하기

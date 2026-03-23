@@ -78,7 +78,7 @@ export const AvailableRoomList = ({ rooms, selectedRoomId, setSelectedRoomId, on
 
       <Spacing size={16} />
       <Button display="full" onClick={onBook} disabled={isBooking || !selectedRoomId}>
-        {isBooking ? '예약 중' : '예약하기'}
+        {isBooking ? '예약 중' : '확정'}
       </Button>
     </div>
   );
