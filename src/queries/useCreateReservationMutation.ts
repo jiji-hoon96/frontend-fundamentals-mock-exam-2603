@@ -1,13 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createReservation } from 'pages/remotes';
+import { reservationKeys } from './queryKeys';
 
 export const useCreateReservationMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createReservation,
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['reservations', variables.date] });
-      queryClient.invalidateQueries({ queryKey: ['myReservations'] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: reservationKeys._def });
     },
   });
 };

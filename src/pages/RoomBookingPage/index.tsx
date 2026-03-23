@@ -6,8 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Top, Spacing, Border } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
 import { formatYYYYMMDD } from 'utils/formatYYYYMMDD';
-import { useGetRoomsQuery } from 'queries/useGetRoomsQuery';
-import { useGetReservationsQuery } from 'queries/useGetReservationsQuery';
+import { roomKeys, reservationKeys } from 'queries/queryKeys';
 import { Message, type MessageProps } from 'components/Message';
 import { bookingSchema, type BookingFormValues } from './bookingSchema';
 import { BookingFilter } from './components/BookingFilter';
@@ -64,7 +63,7 @@ export function RoomBookingPage() {
   }, [form, setSearchParams]);
 
   const [{ data: rooms }, { data: reservations }] = useSuspenseQueries({
-    queries: [useGetRoomsQuery(), useGetReservationsQuery(date)],
+    queries: [roomKeys.list, reservationKeys.list(date)],
   });
 
   const { mutateAsync: createMutation, isPending } = useCreateReservationMutation();

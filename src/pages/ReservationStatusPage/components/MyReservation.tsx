@@ -3,12 +3,11 @@ import { Text, Spacing, ListRow, Button } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
 import { EQUIPMENT_LABELS, type Equipment } from 'models/equipment';
 import type { Reservation } from 'models/reservation';
-import { useGetMyReservationQuery } from 'queries/useGetMyReservationQuery';
-import { useGetRoomsQuery } from 'queries/useGetRoomsQuery';
+import { reservationKeys, roomKeys } from 'queries/queryKeys';
 
 export const MyReservation = ({ onCancel }: { onCancel: (id: string) => Promise<void> }) => {
   const [{ data: myReservations }, { data: rooms }] = useSuspenseQueries({
-    queries: [useGetMyReservationQuery(), useGetRoomsQuery()],
+    queries: [reservationKeys.my, roomKeys.list],
   });
 
   return (

@@ -3,14 +3,13 @@ import { Text, Spacing } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
 import { EQUIPMENT_LABELS, type Equipment } from 'models/equipment';
 import type { Reservation, Room } from 'models/reservation';
-import { useGetReservationsQuery } from 'queries/useGetReservationsQuery';
-import { useGetRoomsQuery } from 'queries/useGetRoomsQuery';
+import { reservationKeys, roomKeys } from 'queries/queryKeys';
 import { useState } from 'react';
 import { getTimelinePercent, TIMELINE_HOURS } from 'models/timeline';
 
 export const ReservationTimeline = ({ date }: { date: string }) => {
   const [{ data: reservations }, { data: rooms }] = useSuspenseQueries({
-    queries: [useGetReservationsQuery(date), useGetRoomsQuery()],
+    queries: [reservationKeys.list(date), roomKeys.list],
   });
 
   const [activeReservation, setActiveReservation] = useState<string | null>(null);
