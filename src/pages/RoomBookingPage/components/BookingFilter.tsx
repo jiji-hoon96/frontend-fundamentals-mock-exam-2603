@@ -1,35 +1,27 @@
-import { useFormContext, useWatch } from 'react-hook-form';
 import { Text, Spacing, Select } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
-import { ALL_EQUIPMENT, EQUIPMENT_LABELS } from 'models/equipment';
+import { ALL_EQUIPMENT, EQUIPMENT_LABELS, type Equipment } from 'models/equipment';
 import { formatYYYYMMDD } from 'utils/formatYYYYMMDD';
-import { SELECTABLE_END_TIMES, SELECTABLE_START_TIMES, TIME_SLOTS } from 'models/timeline';
-import type { BookingFormValues } from '../bookingSchema';
-import { Room } from 'models/reservation';
+import { SELECTABLE_END_TIMES, SELECTABLE_START_TIMES } from 'models/timeline';
+import type { Room } from 'models/reservation';
+import type { BookingParams } from '../hooks/useBookingParams';
 
 interface Props {
   rooms: Room[];
+  params: BookingParams;
+  onChangeParam: <K extends keyof BookingParams>(key: K, value: BookingParams[K]) => void;
 }
 
-export const BookingFilter = ({ rooms }: Props) => {
-  const {
-    register,
-    setValue,
-    formState: { errors },
-  } = useFormContext<BookingFormValues>();
-
-  const [startTime, endTime, equipment, preferredFloor] = useWatch<
-    BookingFormValues,
-    ['startTime', 'endTime', 'equipment', 'preferredFloor']
-  >({
-    name: ['startTime', 'endTime', 'equipment', 'preferredFloor'],
-  });
-
-  const toggleEquipment = (eq: BookingFormValues['equipment'][number]) => {
-    const next = equipment.includes(eq) ? equipment.filter(e => e !== eq) : [...equipment, eq];
-    setValue('equipment', next, { shouldValidate: true });
+export const BookingFilter = ({ rooms, params, onChangeParam }: Props) => {
+  const toggleEquipment = (eq: Equipment) => {
+    const next = params.equipment.includes(eq) ? params.equipment.filter(e => e !== eq) : [...params.equipment, eq];
+    onChangeParam('equipment', next);
   };
 
+  const timeErrorMessage =
+    params.startTime && params.endTime && params.endTime <= params.startTime
+      ? '종료 시간은 시작 시간보다 늦어야 합니다.'
+      : null;
   const floors = [...new Set(rooms.map((room: Room) => room.floor))].sort((a, b) => a - b);
 
   return (
@@ -43,7 +35,14 @@ export const BookingFilter = ({ rooms }: Props) => {
         <Text as="label" typography="t7" fontWeight="medium" color={colors.grey600}>
           날짜
         </Text>
-        <input type="date" min={formatYYYYMMDD(new Date())} aria-label="날짜" css={inputStyle} {...register('date')} />
+        <input
+          type="date"
+          min={formatYYYYMMDD(new Date())}
+          aria-label="날짜"
+          css={inputStyle}
+          value={params.date}
+          onChange={e => onChangeParam('date', e.target.value)}
+        />
       </div>
       <Spacing size={14} />
 
@@ -53,8 +52,8 @@ export const BookingFilter = ({ rooms }: Props) => {
             시작 시간
           </Text>
           <Select
-            value={startTime}
-            onChange={e => setValue('startTime', e.target.value, { shouldValidate: true })}
+            value={params.startTime}
+            onChange={e => onChangeParam('startTime', e.target.value)}
             aria-label="시작 시간"
           >
             <option value="">선택</option>
@@ -70,8 +69,8 @@ export const BookingFilter = ({ rooms }: Props) => {
             종료 시간
           </Text>
           <Select
-            value={endTime}
-            onChange={e => setValue('endTime', e.target.value, { shouldValidate: true })}
+            value={params.endTime}
+            onChange={e => onChangeParam('endTime', e.target.value)}
             aria-label="종료 시간"
           >
             <option value="">선택</option>
@@ -83,11 +82,11 @@ export const BookingFilter = ({ rooms }: Props) => {
           </Select>
         </div>
       </div>
-      {errors.endTime && (
+      {timeErrorMessage && (
         <>
           <Spacing size={8} />
           <span css={{ color: colors.red500, fontSize: 14 }} role="alert">
-            {errors.endTime.message}
+            {timeErrorMessage}
           </span>
         </>
       )}
@@ -103,24 +102,17 @@ export const BookingFilter = ({ rooms }: Props) => {
             min={1}
             aria-label="참석 인원"
             css={inputStyle}
-            {...register('attendees', { valueAsNumber: true })}
+            value={params.attendees}
+            onChange={e => onChangeParam('attendees', Number(e.target.value) || 1)}
           />
-          {errors.attendees && (
-            <>
-              <Spacing size={4} />
-              <span css={{ color: colors.red500, fontSize: 14 }} role="alert">
-                {errors.attendees.message}
-              </span>
-            </>
-          )}
         </div>
         <div css={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
           <Text as="label" typography="t7" fontWeight="medium" color={colors.grey600}>
             선호 층
           </Text>
           <Select
-            value={preferredFloor}
-            onChange={e => setValue('preferredFloor', e.target.value, { shouldValidate: true })}
+            value={params.preferredFloor}
+            onChange={e => onChangeParam('preferredFloor', e.target.value)}
             aria-label="선호 층"
           >
             <option value="">전체</option>
@@ -141,7 +133,7 @@ export const BookingFilter = ({ rooms }: Props) => {
         <Spacing size={8} />
         <div css={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {ALL_EQUIPMENT.map(eq => {
-            const isSelected = equipment.includes(eq);
+            const isSelected = params.equipment.includes(eq);
             return (
               <button
                 key={eq}

@@ -7,11 +7,17 @@ interface Props {
   rooms: Room[];
   selectedRoomId: string | null;
   setSelectedRoomId: (roomId: string) => void;
-  onBook: () => void;
-  isBooking: boolean;
+  onCreateBooking: () => void;
+  isCreatingBooking: boolean;
 }
 
-export const AvailableRoomList = ({ rooms, selectedRoomId, setSelectedRoomId, onBook, isBooking }: Props) => {
+export const AvailableRoomList = ({
+  rooms,
+  selectedRoomId,
+  setSelectedRoomId,
+  onCreateBooking,
+  isCreatingBooking,
+}: Props) => {
   return (
     <div css={{ padding: '0 24px' }}>
       <div css={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
@@ -77,8 +83,8 @@ export const AvailableRoomList = ({ rooms, selectedRoomId, setSelectedRoomId, on
       )}
 
       <Spacing size={16} />
-      <Button display="full" onClick={onBook} disabled={isBooking || !selectedRoomId}>
-        {isBooking ? '예약 중' : '확정'}
+      <Button display="full" onClick={onCreateBooking} disabled={isCreatingBooking || !selectedRoomId}>
+        {isCreatingBooking ? '예약 중' : '확정'}
       </Button>
     </div>
   );
